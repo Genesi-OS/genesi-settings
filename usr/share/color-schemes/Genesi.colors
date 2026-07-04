@@ -3,16 +3,16 @@ ColorScheme=Genesi
 Name=Genesi
 
 [WM]
-activeBackground=13,32,48
-activeBlend=13,32,48
+activeBackground=13,32,48,200
+activeBlend=13,32,48,200
 activeForeground=252,252,252
-inactiveBackground=13,32,48
-inactiveBlend=13,32,48
+inactiveBackground=13,32,48,200
+inactiveBlend=13,32,48,200
 inactiveForeground=161,169,177
 
 [Colors:Window]
 BackgroundAlternate=18,45,64
-BackgroundNormal=13,32,48
+BackgroundNormal=13,32,48,200
 DecorationFocus=29,158,117
 DecorationHover=29,158,117
 ForegroundActive=255,255,255
@@ -26,7 +26,7 @@ ForegroundVisited=15,110,86
 
 [Colors:View]
 BackgroundAlternate=18,45,64
-BackgroundNormal=13,32,48
+BackgroundNormal=13,32,48,200
 DecorationFocus=29,158,117
 DecorationHover=29,158,117
 ForegroundActive=255,255,255
@@ -67,8 +67,8 @@ ForegroundPositive=17,209,22
 ForegroundVisited=15,110,86
 
 [Colors:Tooltip]
-BackgroundAlternate=13,32,48
-BackgroundNormal=13,32,48
+BackgroundAlternate=13,32,48,180
+BackgroundNormal=13,32,48,180
 DecorationFocus=29,158,117
 DecorationHover=29,158,117
 ForegroundActive=255,255,255
@@ -81,8 +81,8 @@ ForegroundPositive=17,209,22
 ForegroundVisited=15,110,86
 
 [Colors:Complementary]
-BackgroundAlternate=13,32,48
-BackgroundNormal=13,32,48
+BackgroundAlternate=13,32,48,180
+BackgroundNormal=13,32,48,180
 DecorationFocus=29,158,117
 DecorationHover=29,158,117
 ForegroundActive=255,255,255

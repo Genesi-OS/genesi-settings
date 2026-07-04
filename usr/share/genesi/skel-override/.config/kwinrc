@@ -43,24 +43,15 @@ BlurStrength=4
 NoiseStrength=0
 Saturation=127
 
-# The SINGLE source of Genesi's window glass. Windows are painted fully opaque
-# now (the color scheme + klassyrc carry no alpha), so this compositor effect —
-# applied window-wide, titlebar and body together — is what makes them
-# see-through, and forceblur frosts it. Decoration is kept equal to ActiveOpacity
-# so the titlebar fades by the same amount as the body (uniform, no lighter
-# titlebar). Because it's a compositor effect it toggles LIVE for every window
-# (open or new): the AI Mode kwin helper unloads it (with blur/contrast) and the
-# whole desktop snaps fully opaque instantly — no blur, no transparency — then
-# back to glass when AI Mode turns off. Tune ActiveOpacity for more/less glass.
 [Effect-Translucency]
-ActiveOpacity=82
-InactiveOpacity=78
-Decoration=82
-Dialogs=90
-DialogsInactive=85
+Decoration=1
+Dialogs=92
+DialogsInactive=88
+InMoveResize=88
+InactiveOpacity=85
 MenuOpacity=92
-MoveResize=85
-InMoveResize=82
+MoveResize=2
+ActiveOpacity=85
 
 [Compositing]
 Backend=OpenGL
