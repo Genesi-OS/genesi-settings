@@ -45,9 +45,15 @@ plasma-apply-colorscheme Genesi 2>/dev/null || true
 # so an installed system can never come up with the unreadable selection again.
 if command -v kwriteconfig6 >/dev/null 2>&1; then
     kwriteconfig6 --file kdeglobals --group "Colors:Selection" \
-        --key ForegroundNormal "255,255,255" 2>/dev/null || true
+        --key BackgroundNormal "29,158,117" 2>/dev/null || true
     kwriteconfig6 --file kdeglobals --group "Colors:Selection" \
-        --key ForegroundActive "255,255,255" 2>/dev/null || true
+        --key BackgroundAlternate "22,120,90" 2>/dev/null || true
+    for key in ForegroundActive ForegroundInactive ForegroundLink \
+        ForegroundNegative ForegroundNeutral ForegroundNormal \
+        ForegroundPositive ForegroundVisited; do
+        kwriteconfig6 --file kdeglobals --group "Colors:Selection" \
+            --key "$key" "255,255,255" 2>/dev/null || true
+    done
 fi
 
 # Icon theme -- plasma-changeicons repaints the running shell live (it is the

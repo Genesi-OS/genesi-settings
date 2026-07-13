@@ -1,6 +1,6 @@
 [Colors:Button]
-BackgroundAlternate=29,158,117
-BackgroundNormal=44,44,42,150
+BackgroundAlternate=18,45,64,235
+BackgroundNormal=13,32,48,235
 DecorationFocus=29,158,117
 DecorationHover=29,158,117
 ForegroundActive=255,255,255
@@ -13,18 +13,18 @@ ForegroundPositive=17,209,22
 ForegroundVisited=15,110,86
 
 [Colors:Selection]
-BackgroundAlternate=15,110,86
-BackgroundNormal=29,158,117,200
+BackgroundAlternate=22,120,90
+BackgroundNormal=29,158,117
 DecorationFocus=29,158,117
 DecorationHover=29,158,117
 ForegroundActive=255,255,255
-ForegroundInactive=225,245,238
-ForegroundLink=253,188,75
-ForegroundNegative=176,55,69
-ForegroundNeutral=198,92,0
+ForegroundInactive=255,255,255
+ForegroundLink=255,255,255
+ForegroundNegative=255,255,255
+ForegroundNeutral=255,255,255
 ForegroundNormal=255,255,255
-ForegroundPositive=23,104,57
-ForegroundVisited=155,89,182
+ForegroundPositive=255,255,255
+ForegroundVisited=255,255,255
 
 [Colors:Tooltip]
 BackgroundAlternate=44,44,42,200

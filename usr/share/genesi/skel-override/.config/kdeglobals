@@ -52,13 +52,13 @@ BackgroundNormal=29,158,117
 DecorationFocus=29,158,117
 DecorationHover=94,234,212
 ForegroundActive=255,255,255
-ForegroundInactive=210,228,222
+ForegroundInactive=255,255,255
 ForegroundLink=255,255,255
-ForegroundNegative=255,180,180
-ForegroundNeutral=255,225,150
+ForegroundNegative=255,255,255
+ForegroundNeutral=255,255,255
 ForegroundNormal=255,255,255
-ForegroundPositive=190,245,210
-ForegroundVisited=235,245,240
+ForegroundPositive=255,255,255
+ForegroundVisited=255,255,255
 
 [Colors:Tooltip]
 BackgroundAlternate=18,45,64,235
