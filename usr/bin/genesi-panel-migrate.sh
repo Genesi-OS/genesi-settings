@@ -23,11 +23,22 @@
 
 set -u
 
+# Every default Genesi widget that must reach an EXISTING user's panel. Add new
+# ones here; the marker below is keyed to this list so appending a widget
+# automatically re-arms the migration for users who already ran an older one.
+WIDGETS="org.genesi.containers org.genesi.studio"
+
 MARKER_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/genesi"
-MARKER="$MARKER_DIR/panel-migrate-containers.done"
+# The marker used to be a fixed "panel-migrate-containers.done", which meant a
+# user who had already been migrated once could never receive a widget added
+# later — the script exited before doing anything. Key the marker to the widget
+# set instead, so shipping a new widget produces a new marker name and the
+# migration runs again (still exactly once per set).
+MARKER_KEY="$(printf '%s' "$WIDGETS" | tr ' ' '-')"
+MARKER="$MARKER_DIR/panel-migrate-$MARKER_KEY.done"
 AUTOSTART="${XDG_CONFIG_HOME:-$HOME/.config}/autostart/genesi-panel-migrate.desktop"
 
-# Already migrated -> make sure the autostart is gone and stop.
+# Already migrated for THIS widget set -> make sure the autostart is gone, stop.
 if [ -f "$MARKER" ]; then
     rm -f "$AUTOSTART"
     exit 0
@@ -46,25 +57,35 @@ for q in qdbus6 qdbus-qt6 qdbus; do
 done
 [ -n "$QDBUS" ] || exit 0   # nothing to do without D-Bus; retry next login
 
-# Add org.genesi.containers to the first panel if no panel already has it.
-# print("ok") on success (present or just added), "nopanel" if there is no
-# panel to add it to. Anything else (empty / error) -> leave the marker unset
+# Add every widget in $WIDGETS that no panel already has.
+# print("ok") on success (all present, or just added), "nopanel" if there is no
+# panel to add them to. Anything else (empty / error) -> leave the marker unset
 # so we retry on the next login.
-read -r -d '' JS <<'PLASMASCRIPT'
-var present = false;
+#
+# The widget list is injected as a JS array literal. It is built from the
+# WIDGETS constant above (plugin ids only — no user input ever reaches here).
+JS_WIDGETS=""
+for w in $WIDGETS; do
+    JS_WIDGETS="$JS_WIDGETS\"$w\","
+done
+
+JS="
+var want = [${JS_WIDGETS%,}];
 var ps = panels();
-for (var i = 0; i < ps.length; i++) {
-    var ws = ps[i].widgets();
-    for (var j = 0; j < ws.length; j++) {
-        if (ws[j].type == "org.genesi.containers") { present = true; }
+if (ps.length == 0) {
+    print('nopanel');
+} else {
+    var have = {};
+    for (var i = 0; i < ps.length; i++) {
+        var ws = ps[i].widgets();
+        for (var j = 0; j < ws.length; j++) { have[ws[j].type] = true; }
     }
+    for (var k = 0; k < want.length; k++) {
+        if (!have[want[k]]) { ps[0].addWidget(want[k]); }
+    }
+    print('ok');
 }
-if (!present && ps.length > 0) {
-    ps[0].addWidget("org.genesi.containers");
-    present = true;
-}
-print(present ? "ok" : "nopanel");
-PLASMASCRIPT
+"
 
 RESULT="$("$QDBUS" org.kde.plasma.shell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$JS" 2>/dev/null)" || RESULT=""
 

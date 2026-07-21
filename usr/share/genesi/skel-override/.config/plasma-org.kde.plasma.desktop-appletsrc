@@ -37,7 +37,7 @@ panelLengthMode=0
 panelSize=100
 
 [Containments][2][General]
-AppletOrder=30;4;5;6;31;32;33;7;9;10
+AppletOrder=30;4;5;6;31;32;33;34;7;9;10
 adaptiveOpacityEnabled=false
 floating=1
 panelAlignment=1
@@ -91,6 +91,10 @@ plugin=org.genesi.aimode
 [Containments][2][Applets][33]
 immutability=1
 plugin=org.genesi.containers
+
+[Containments][2][Applets][34]
+immutability=1
+plugin=org.genesi.studio
 
 [Containments][2][Applets][7]
 immutability=1
