@@ -29,13 +29,20 @@ done
 # Wallpaper -- live apply (no shell restart). When the seeded appletsrc already
 # loaded our wallpaper this is a no-op and there is NO fade; it only does
 # anything (and only then a brief fade) if the seed somehow didn't take.
+# One-shot marker. The parts below that express TASTE (wallpaper, colour
+# scheme) run only on the first login: re-applying them every time would stomp
+# on a user who deliberately picked their own, which is why this script used to
+# delete itself entirely.
+GENESI_THEME_MARKER="$HOME/.config/.genesi-theme-applied"
+[ -e "$GENESI_THEME_MARKER" ] && GENESI_FIRST_RUN=0 || GENESI_FIRST_RUN=1
+
 WALL=/usr/share/wallpapers/genesi/wallpaper.png
-if command -v plasma-apply-wallpaperimage >/dev/null 2>&1 && [ -f "$WALL" ]; then
+if [ "$GENESI_FIRST_RUN" = 1 ] && command -v plasma-apply-wallpaperimage >/dev/null 2>&1 && [ -f "$WALL" ]; then
     plasma-apply-wallpaperimage "$WALL" 2>/dev/null || true
 fi
 
 # Color scheme -- live, no restart.
-plasma-apply-colorscheme Genesi 2>/dev/null || true
+[ "$GENESI_FIRST_RUN" = 1 ] && plasma-apply-colorscheme Genesi 2>/dev/null || true
 
 # Selected-item text MUST stay white on the brand-green selection background.
 # Belt-and-suspenders: the skel kdeglobals and the Genesi color scheme both
@@ -74,6 +81,19 @@ fi
 # One-shot: remove the autostart so this only runs on the very first login.
 # (Panel layout + Kickoff sizing already come from the static appletsrc; there
 # is no layout step to retry, and every apply above is idempotent.)
-rm -f ~/.config/autostart/genesi-apply-theme.desktop
+# Deliberately NOT deleting this autostart entry any more.
+#
+# It used to `rm -f` itself here, which made the whole script one-shot. That is
+# exactly why "selected text goes colourless and icons go black" kept coming
+# back after every system update and had to be fixed by hand, forever: anything
+# that later clobbered kdeglobals (a Plasma update, a regenerated kdedefaults
+# layer) was never repaired, because the repair had deleted itself.
+#
+# The contrast repair above is idempotent and cheap -- it writes the same few
+# keys and reconfigures KWin -- so it is safe to run at every login. The parts
+# that express taste are marker-gated above, so a user's own wallpaper and
+# colour scheme survive.
+mkdir -p "$(dirname "$GENESI_THEME_MARKER")" 2>/dev/null || true
+touch "$GENESI_THEME_MARKER" 2>/dev/null || true
 
 exit 0
