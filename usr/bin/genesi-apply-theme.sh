@@ -42,7 +42,19 @@ if [ "$GENESI_FIRST_RUN" = 1 ] && command -v plasma-apply-wallpaperimage >/dev/n
 fi
 
 # Color scheme -- live, no restart.
-[ "$GENESI_FIRST_RUN" = 1 ] && plasma-apply-colorscheme Genesi 2>/dev/null || true
+# plasma-apply-colorscheme is a NO-OP when the scheme NAME already matches --
+# it prints "already set" and changes nothing. That is precisely the broken
+# case: kdeglobals still says ColorScheme=Genesi while its [Colors:*] values
+# have been clobbered, so the one command that could repair them declines to
+# run. Bounce through another scheme to force a real rewrite.
+if [ "$GENESI_FIRST_RUN" = 1 ]; then
+    plasma-apply-colorscheme Genesi 2>/dev/null || true
+else
+    # Repair pass: force the values to be rewritten from Genesi.colors even
+    # though the name already matches.
+    plasma-apply-colorscheme BreezeDark 2>/dev/null || true
+    plasma-apply-colorscheme Genesi 2>/dev/null || true
+fi
 
 # Selected-item text MUST stay white on the brand-green selection background.
 # Belt-and-suspenders: the skel kdeglobals and the Genesi color scheme both
@@ -75,6 +87,13 @@ fi
 # seeded kwinrc. Ask KWin to reload it IN PLACE -- no compositor restart, so no
 # black flash. Safe on both X11 and Wayland (unlike kwin_wayland --replace).
 if [ -n "$QDBUS" ]; then
+    "$QDBUS" org.kde.KWin /KWin reconfigure 2>/dev/null || true
+    # KWin reconfigure only reaches the WINDOW MANAGER. kwriteconfig6 wrote
+    # kdeglobals without emitting any change signal, so every already-open Qt
+    # app keeps the stale palette -- the repair appears to do nothing until the
+    # user logs out. KGlobalSettings' notifyChange(ChangePalette=0, 0) is what
+    # tells them to re-read it.
+    "$QDBUS" org.kde.KGlobalSettings /KGlobalSettings         org.kde.KGlobalSettings.notifyChange 0 0 2>/dev/null || true
     "$QDBUS" org.kde.KWin /KWin reconfigure 2>/dev/null || true
 fi
 
