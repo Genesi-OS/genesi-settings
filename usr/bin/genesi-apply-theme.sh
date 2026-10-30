@@ -47,9 +47,26 @@ fi
 # case: kdeglobals still says ColorScheme=Genesi while its [Colors:*] values
 # have been clobbered, so the one command that could repair them declines to
 # run. Bounce through another scheme to force a real rewrite.
+#
+# The repair is for a user who is STILL on Genesi. It used to run for
+# everyone, and applying Genesi at every login threw away whatever scheme the
+# user had picked: "I change the colour scheme and it does not stick after a
+# reboot". What the user chose is read first; anything but Genesi is theirs
+# and is left alone, and so are the selection colours and icons below.
+cfg_read() {
+    command -v kreadconfig6 >/dev/null 2>&1 || return 0
+    kreadconfig6 --file kdeglobals --group "$1" --key "$2" 2>/dev/null
+}
+GENESI_SCHEME_NOW="$(cfg_read General ColorScheme)"
+GENESI_ICONS_NOW="$(cfg_read Icons Theme)"
+GENESI_ON_SCHEME=0
+if [ "$GENESI_FIRST_RUN" = 1 ] || [ -z "$GENESI_SCHEME_NOW" ] || [ "$GENESI_SCHEME_NOW" = Genesi ]; then
+    GENESI_ON_SCHEME=1
+fi
+
 if [ "$GENESI_FIRST_RUN" = 1 ]; then
     plasma-apply-colorscheme Genesi 2>/dev/null || true
-else
+elif [ "$GENESI_ON_SCHEME" = 1 ]; then
     # Repair pass: force the values to be rewritten from Genesi.colors even
     # though the name already matches.
     plasma-apply-colorscheme BreezeDark 2>/dev/null || true
@@ -62,7 +79,8 @@ fi
 # left a dark value, selected text (e.g. in the Package Installer) goes
 # near-black and vanishes. Force it white here on every new user's first login,
 # so an installed system can never come up with the unreadable selection again.
-if command -v kwriteconfig6 >/dev/null 2>&1; then
+# Only on the Genesi scheme: another scheme has its own selection colours.
+if [ "$GENESI_ON_SCHEME" = 1 ] && command -v kwriteconfig6 >/dev/null 2>&1; then
     kwriteconfig6 --file kdeglobals --group "Colors:Selection" \
         --key BackgroundNormal "29,158,117" 2>/dev/null || true
     kwriteconfig6 --file kdeglobals --group "Colors:Selection" \
@@ -78,7 +96,10 @@ fi
 # Icon theme -- plasma-changeicons repaints the running shell live (it is the
 # same tool System Settings uses), so no plasmashell --replace is needed. Also
 # persist to kdeglobals for apps that read it at start.
-if [ -d /usr/share/icons/Tela-circle-green-dark ]; then
+# Only on the first login or while the user is still on our icons: an icon
+# theme they picked themselves is theirs, same as the colour scheme.
+if [ -d /usr/share/icons/Tela-circle-green-dark ] && { [ "$GENESI_FIRST_RUN" = 1 ] \
+        || [ -z "$GENESI_ICONS_NOW" ] || [ "$GENESI_ICONS_NOW" = Tela-circle-green-dark ]; }; then
     /usr/lib/plasma-changeicons Tela-circle-green-dark 2>/dev/null || true
     kwriteconfig6 --file kdeglobals --group Icons --key Theme Tela-circle-green-dark 2>/dev/null || true
 fi
