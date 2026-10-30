@@ -1,0 +1,32 @@
+#!/bin/bash
+# Genesi AI Mode launcher: toggles between Forced ON and Automatic, and says
+# which one it switched to.
+#
+# This used to be inline in genesi-aimode.desktop with the notification text
+# hardcoded in pt-BR, so English systems got "Modo IA Forçado ativado com
+# sucesso!". The text now follows the session language: Portuguese only for
+# a pt locale, English everywhere else.
+
+force=/run/genesi-ai-mode/force
+
+case "${LC_ALL:-${LC_MESSAGES:-${LANG:-}}}" in
+    pt*) msg_auto="Modo automático restaurado"
+         msg_on="Modo IA forçado: ligado" ;;
+    *)   msg_auto="Back to automatic mode"
+         msg_on="AI Mode forced on" ;;
+esac
+
+notify() {
+    command -v notify-send >/dev/null 2>&1 || return 0
+    setsid -f timeout 3 notify-send -i /usr/share/pixmaps/genesi-logo.png \
+        -a 'Genesi AI Mode' -t 3000 'AI Mode' "$1" >/dev/null 2>&1
+}
+
+if [ -f "$force" ]; then
+    rm -f "$force"
+    notify "$msg_auto"
+else
+    mkdir -p /run/genesi-ai-mode 2>/dev/null
+    printf on > "$force"
+    notify "$msg_on"
+fi

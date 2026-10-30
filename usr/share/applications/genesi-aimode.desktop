@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Genesi AI Mode
 Comment=Toggle Genesi AI Mode
-Exec=bash -c "if [ -f /run/genesi-ai-mode/force ]; then rm -f /run/genesi-ai-mode/force; setsid -f timeout 3 notify-send -i /usr/share/pixmaps/genesi-logo.png -a 'Genesi AI Mode' -t 3000 'AI Mode' 'Modo Automático restaurado' >/dev/null 2>&1; else mkdir -p /run/genesi-ai-mode 2>/dev/null; printf on > /run/genesi-ai-mode/force; setsid -f timeout 3 notify-send -i /usr/share/pixmaps/genesi-logo.png -a 'Genesi AI Mode' -t 3000 'AI Mode' 'Modo IA Forçado ativado com sucesso!' >/dev/null 2>&1; fi"
+Exec=/usr/bin/genesi-aimode-toggle
 Icon=cpu
 Type=Application
 Categories=System;
